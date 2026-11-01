@@ -1,0 +1,64 @@
+@page "/"
+@using Hibira.Client
+@inject NavigationManager Navigation
+@implements IAsyncDisposable
+
+<PageTitle>Blazor chat on Hibira</PageTitle>
+
+<main class="chat">
+    <h1>Blazor chat <small>on Hibira</small></h1>
+    <p class="hint">Open this page in two windows, or <a href="js.html">the JavaScript client</a> next to it.</p>
+    <div class="row">
+        <input @bind="userInput" placeholder="Your name" aria-label="Your name" />
+        <input @bind="messageInput" @bind:event="oninput" @onkeyup="OnKey" placeholder="Message" aria-label="Message" class="grow" />
+        <button @onclick="Send" disabled="@(!IsConnected)">Send</button>
+    </div>
+    <p class="status">@(IsConnected ? $"Connected as {hubConnection?.ConnectionId}" : "Connecting…")</p>
+    <ul class="messages">
+        @foreach (var message in messages)
+        {
+            <li><b>@message.User</b> @message.Text</li>
+        }
+    </ul>
+</main>
+
+@code {
+    private HubConnection? hubConnection;
+    private readonly List<(string User, string Text)> messages = new();
+    private string? userInput = "Blazor";
+    private string? messageInput;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/hubs/chat"))
+            .WithAutomaticReconnect()
+            .Build();
+
+        hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
+        {
+            messages.Add((user, message));
+            InvokeAsync(StateHasChanged);
+        });
+
+        await hubConnection.StartAsync();
+    }
+
+    private async Task Send()
+    {
+        if (hubConnection is not null && !string.IsNullOrWhiteSpace(messageInput))
+        {
+            await hubConnection.SendAsync("SendMessage", userInput, messageInput);
+            messageInput = "";
+        }
+    }
+
+    private Task OnKey(KeyboardEventArgs e) => e.Key == "Enter" ? Send() : Task.CompletedTask;
+
+    public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null) await hubConnection.DisposeAsync();
+    }
+}

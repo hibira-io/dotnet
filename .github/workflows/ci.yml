@@ -1,0 +1,50 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - run: dotnet build -c Release
+      - run: dotnet test -c Release --no-build
+      - name: Pack
+        run: dotnet pack -c Release --no-build -o artifacts
+      - name: hibira-hub.js parses
+        run: node --check src/Hibira.AspNetCore/wwwroot/hibira-hub.js
+
+  # Runs the end-to-end checks against a real Hibira app when the repository
+  # has E2E_APP_ID / E2E_KEY / E2E_SECRET secrets (skipped otherwise).
+  e2e:
+    runs-on: ubuntu-latest
+    env:
+      E2E_APP_ID: ${{ secrets.E2E_APP_ID }}
+      E2E_KEY: ${{ secrets.E2E_KEY }}
+      E2E_SECRET: ${{ secrets.E2E_SECRET }}
+      E2E_HOST: ws.hibira.io
+      E2E_PORT: "443"
+      E2E_TLS: "1"
+    steps:
+      - uses: actions/checkout@v4
+        if: env.E2E_SECRET != ''
+      - uses: actions/setup-dotnet@v4
+        if: env.E2E_SECRET != ''
+        with:
+          dotnet-version: 8.0.x
+      - uses: actions/setup-node@v4
+        if: env.E2E_SECRET != ''
+        with:
+          node-version: 22
+      - if: env.E2E_SECRET != ''
+        run: npm install --prefix tests/Hibira.E2E/js
+      - if: env.E2E_SECRET != ''
+        run: dotnet run --project tests/Hibira.E2E

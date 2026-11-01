@@ -1,0 +1,9 @@
+{
+  "name": "hibira-dotnet-e2e-js",
+  "private": true,
+  "type": "module",
+  "description": "Runs hibira-hub.js (the browser client) under Node against the e2e hub.",
+  "dependencies": {
+    "pusher-js": "8.4.0"
+  }
+}
