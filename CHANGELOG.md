@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1
+
+- README images now load on nuget.org (absolute raw.githubusercontent.com
+  URLs instead of repository-relative paths, which nuget.org does not show).
+
 ## 0.1.0
 
 - `Hibira`: HTTP API client (`TriggerAsync`, `TriggerBatchAsync`,
