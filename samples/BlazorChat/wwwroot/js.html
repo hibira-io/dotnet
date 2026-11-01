@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JavaScript chat on Hibira</title>
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+  <main class="chat">
+    <h1>JavaScript chat <small>on Hibira</small></h1>
+    <p class="hint">The same hub from the browser client. <a href="/">Back to Blazor</a>.</p>
+    <div class="row">
+      <input id="user" value="Browser" aria-label="Your name" />
+      <input id="message" class="grow" placeholder="Message" aria-label="Message" />
+      <button id="send" disabled>Send</button>
+    </div>
+    <p class="status" id="status">Connecting…</p>
+    <ul class="messages" id="messages"></ul>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/pusher-js@8.4.0/dist/web/pusher.min.js"></script>
+  <script src="_content/Hibira.AspNetCore/hibira-hub.js"></script>
+  <script>
+    const connection = new hibira.HubConnectionBuilder().withUrl("/hubs/chat").withAutomaticReconnect().build();
+
+    connection.on("ReceiveMessage", (user, message) => {
+      const li = document.createElement("li");
+      const b = document.createElement("b");
+      b.textContent = user;
+      li.append(b, " " + message);
+      document.getElementById("messages").appendChild(li);
+    });
+
+    async function send() {
+      const input = document.getElementById("message");
+      if (!input.value.trim()) return;
+      await connection.invoke("SendMessage", document.getElementById("user").value, input.value);
+      input.value = "";
+    }
+    document.getElementById("send").addEventListener("click", send);
+    document.getElementById("message").addEventListener("keyup", (e) => { if (e.key === "Enter") send(); });
+
+    connection.start().then(() => {
+      document.getElementById("send").disabled = false;
+      document.getElementById("status").textContent = "Connected as " + connection.connectionId;
+    }, (e) => { document.getElementById("status").textContent = e.message; });
+  </script>
+</body>
+</html>

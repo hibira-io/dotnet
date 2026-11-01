@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <PackageId>Hibira</PackageId>
+    <Description>Server library for Hibira, the hosted realtime service that speaks the Pusher Channels protocol: trigger events, sign private and presence channels, sign in users, verify webhooks and ask people for approvals.</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <InternalsVisibleTo Include="Hibira.Tests" />
+  </ItemGroup>
+</Project>

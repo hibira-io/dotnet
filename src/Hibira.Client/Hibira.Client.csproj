@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <PackageId>Hibira.Client</PackageId>
+    <Description>.NET client for Hibira.AspNetCore hubs, for Blazor WebAssembly, MAUI, console and worker apps. HubConnection mirrors the SignalR .NET client (On, InvokeAsync, SendAsync, automatic reconnect).</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <InternalsVisibleTo Include="Hibira.Tests" />
+  </ItemGroup>
+</Project>

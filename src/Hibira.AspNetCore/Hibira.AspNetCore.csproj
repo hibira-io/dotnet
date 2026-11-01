@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <PackageId>Hibira.AspNetCore</PackageId>
+    <Description>ASP.NET Core and Blazor integration for Hibira, the hosted realtime service that speaks the Pusher Channels protocol. HibiraHub mirrors the SignalR Hub API (Clients.All, Groups, Clients.User, typed hubs, IHubContext), so moving off a self-hosted or Azure SignalR backend is a small change.</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AddRazorSupportForMvc>false</AddRazorSupportForMvc>
+    <StaticWebAssetBasePath>_content/Hibira.AspNetCore</StaticWebAssetBasePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="../Hibira/Hibira.csproj" />
+    <None Include="../../README.md" Pack="true" PackagePath="/" />
+    <InternalsVisibleTo Include="Hibira.Tests" />
+  </ItemGroup>
+</Project>
