@@ -20,7 +20,7 @@ calls; Hibira holds the WebSocket connections and fans messages out.
 
 Supports .NET 8 and later.
 
-![Blazor and the JavaScript client in the same chat](.github/blazor-en-desktop-light.png)
+![Blazor and the JavaScript client in the same chat](https://raw.githubusercontent.com/hibira-io/dotnet/main/.github/blazor-en-desktop-light.png)
 
 ## Install
 
@@ -132,7 +132,7 @@ start the connection in `OnAfterRenderAsync`.
 `onreconnected`, `state` and `connectionId`. Pass `accessTokenFactory` or
 `headers` to `withUrl` for bearer tokens.
 
-![The JavaScript client on a phone, dark theme](.github/js-en-mobile-dark.png)
+![The JavaScript client on a phone, dark theme](https://raw.githubusercontent.com/hibira-io/dotnet/main/.github/js-en-mobile-dark.png)
 
 ## Everything a hub can do
 
