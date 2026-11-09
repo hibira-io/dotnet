@@ -59,6 +59,7 @@ public static class HibiraServiceCollectionExtensions
     private static IHibiraBuilder AddCore(IServiceCollection services)
     {
         services.AddOptions<HibiraHubOptions>();
+        services.AddOptions<HibiraWaitingRoomOptions>().BindConfiguration(HibiraOptions.SectionName + ":WaitingRoom");
         services.AddHttpClient("Hibira");
         services.TryAddSingleton<IHibiraClient>(sp =>
             new HibiraClient(sp.GetRequiredService<IOptions<HibiraOptions>>().Value,

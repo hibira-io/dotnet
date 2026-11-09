@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0
+
+- Waiting rooms: `app.UseHibiraWaitingRoom()` with `.RequireWaitingRoom("room")`
+  or `[RequireWaitingRoom("room")]`, or `app.UseHibiraWaitingRoom("/drop", "room")`
+  for a path prefix, sends visitors without a pass to the Hibira queue and
+  lets them in with a signed pass kept in an HttpOnly cookie
+  (`HttpContext.GetWaitingRoomPass()`). `Hibira.WaitingRoom.VerifyPass` checks
+  a pass anywhere.
+
 ## 0.1.1
 
 - README images now load on nuget.org (absolute raw.githubusercontent.com
