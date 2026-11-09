@@ -223,6 +223,33 @@ builder.Services.AddStackExchangeRedisCache(o => o.Configuration = "...");
 builder.Services.AddHibira().AddDistributedConnectionStore();
 ```
 
+## Waiting room
+
+Put a [Hibira waiting room](https://github.com/hibira-io/waiting-room) in front
+of a ticket drop or launch page:
+
+```csharp
+app.UseRouting();
+app.UseHibiraWaitingRoom();
+
+app.MapGet("/drop/{id}", (HttpContext c) => $"Your number: {c.GetWaitingRoomPass()!.Number}")
+   .RequireWaitingRoom("presale");
+```
+
+`[RequireWaitingRoom("presale")]` does the same on an MVC controller or
+action, and `app.UseHibiraWaitingRoom("/drop", "presale")` protects a path
+prefix. Visitors without a pass are redirected to the hosted queue page
+(non-GET requests get a `403`). When it's their turn they come back with a
+signed pass, which is checked and kept in an HttpOnly cookie. Optional
+settings live under `Hibira:WaitingRoom` (`Host`, `Lang`, `PreviousSecret`).
+
+Create the room (rate, start time, `return_urls`) with the
+[waiting rooms API](https://github.com/hibira-io/pusher-server/blob/master/docs/waiting-rooms.md).
+A pass is valid for 30 minutes by default and works in any browser; if each
+queue number may check out once, record `pass.TicketId` and refuse a repeat.
+`Hibira.WaitingRoom.VerifyPass(token, secret, "presale")` checks a pass
+anywhere.
+
 ## The HTTP API on its own
 
 ```csharp
@@ -291,3 +318,5 @@ Service。從 SignalR 移轉時,只要把 `Hub` 換成 `HibiraHub`、`MapHub` �
 每則訊息上限 10 KB(Free 方案 4 KB)。多台伺服器時請用
 `AddDistributedConnectionStore()`;要即時得知斷線,請在 Hibira 主控台設定
 channel_vacated webhook 並 `MapHibiraWebhooks`。
+
+等候室(waiting room):`app.UseHibiraWaitingRoom()` 加上 `.RequireWaitingRoom("presale")`(或 `[RequireWaitingRoom]`),沒有 pass 的訪客會被導到 Hibira 託管的排隊頁,輪到時帶著簽名 pass 回來並存成 HttpOnly cookie。
