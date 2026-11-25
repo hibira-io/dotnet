@@ -115,6 +115,7 @@ public class CoreTests
 internal sealed class RecordingHandler : HttpMessageHandler
 {
     public List<(Uri Uri, string Body)> Requests { get; } = new();
+    public List<HttpMethod> Methods { get; } = new();
     public HttpStatusCode Status { get; set; } = HttpStatusCode.OK;
     public string Response { get; set; } = "{}";
 
@@ -122,6 +123,7 @@ internal sealed class RecordingHandler : HttpMessageHandler
     {
         var body = request.Content == null ? "" : await request.Content.ReadAsStringAsync(cancellationToken);
         Requests.Add((request.RequestUri!, body));
+        Methods.Add(request.Method);
         return new HttpResponseMessage(Status) { Content = new StringContent(Response) };
     }
 }

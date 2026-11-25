@@ -138,6 +138,17 @@ public sealed class HibiraClient : IHibiraClient
     }
 
     /// <inheritdoc />
+    public async Task<JsonNode> ChatAsync(HttpMethod method, string path, IEnumerable<KeyValuePair<string, string>>? query = null, object? body = null, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(method);
+        ArgumentException.ThrowIfNullOrEmpty(path);
+        if (!path.StartsWith('/')) path = "/" + path;
+        string? json = body == null && (method == HttpMethod.Get || method == HttpMethod.Delete) ? null : DataString(body ?? new JsonObject());
+        var text = await SendAsync(method, "chat" + path, query, json, cancellationToken).ConfigureAwait(false);
+        return (string.IsNullOrWhiteSpace(text) ? null : JsonNode.Parse(text)) ?? new JsonObject();
+    }
+
+    /// <inheritdoc />
     public HibiraChannelAuth AuthorizeChannel(string socketId, string channel)
     {
         CheckSocketId(socketId);

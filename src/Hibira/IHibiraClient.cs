@@ -1,3 +1,5 @@
+using System.Text.Json.Nodes;
+
 namespace Hibira;
 
 /// <summary>
@@ -69,4 +71,13 @@ public interface IHibiraClient
     /// X-Hibira-Previous-Signature headers and the raw body.
     /// </summary>
     HibiraWebhook? VerifyWebhook(string? key, string? signature, string? previousSignature, ReadOnlySpan<byte> body);
+
+    /// <summary>
+    /// Any Chat API call (https://hibira.io/chat-api), signed. <paramref name="path"/>
+    /// is relative to /apps/APP_ID/chat, such as "/conversations/c1/typing";
+    /// <paramref name="body"/> is sent as JSON. See <see cref="HibiraChatExtensions"/>
+    /// for the common calls.
+    /// </summary>
+    Task<JsonNode> ChatAsync(HttpMethod method, string path, IEnumerable<KeyValuePair<string, string>>? query = null, object? body = null, CancellationToken cancellationToken = default) =>
+        throw new NotSupportedException("this IHibiraClient has no Chat API");
 }
