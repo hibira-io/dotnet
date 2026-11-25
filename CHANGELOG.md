@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- Chat API: `IHibiraClient.ChatAsync` signs any Chat API call, with
+  extension methods for the common ones (`PutConversationAsync`,
+  `GetConversationAsync`, `DeleteConversationAsync`, `AddMembersAsync`,
+  `RemoveMemberAsync`, `SendMessageAsync`, `ListMessagesAsync`,
+  `MarkReadAsync`, `SystemMessageAsync`, `UserConversationsAsync`).
+- Live Chat verified visitors: `HibiraLiveChat` (registered from the
+  `Hibira:LiveChat` section) renders the widget script tag with the signed
+  user ID; `HibiraLiveChat.UserHash` computes the hash on its own.
+
 ## 0.2.0
 
 - Waiting rooms: `app.UseHibiraWaitingRoom()` with `.RequireWaitingRoom("room")`

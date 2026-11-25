@@ -18,6 +18,16 @@ internal sealed class HibiraBuilder : IHibiraBuilder
     public IServiceCollection Services { get; }
 }
 
+/// <summary>Hibira Live Chat settings, from the "Hibira:LiveChat" configuration section.</summary>
+public sealed class HibiraLiveChatOptions
+{
+    /// <summary>The workspace ID, from Live Chat › Settings › Widget (HIBIRA__LIVECHAT__WORKSPACE).</summary>
+    public string? Workspace { get; set; }
+
+    /// <summary>The Verified visitors identity secret (HIBIRA__LIVECHAT__IDENTITYSECRET).</summary>
+    public string? IdentitySecret { get; set; }
+}
+
 /// <summary>Registers Hibira.</summary>
 public static class HibiraServiceCollectionExtensions
 {
@@ -64,6 +74,12 @@ public static class HibiraServiceCollectionExtensions
         services.TryAddSingleton<IHibiraClient>(sp =>
             new HibiraClient(sp.GetRequiredService<IOptions<HibiraOptions>>().Value,
                 sp.GetRequiredService<IHttpClientFactory>().CreateClient("Hibira")));
+        services.AddOptions<HibiraLiveChatOptions>().BindConfiguration(HibiraOptions.SectionName + ":LiveChat");
+        services.TryAddSingleton(sp =>
+        {
+            var o = sp.GetRequiredService<IOptions<HibiraLiveChatOptions>>().Value;
+            return new HibiraLiveChat(o.Workspace, o.IdentitySecret);
+        });
         services.TryAddSingleton<IHibiraConnectionStore, MemoryHibiraConnectionStore>();
         services.TryAddSingleton<HubRegistry>();
         services.TryAddSingleton(typeof(IHubContext<>), typeof(HubContext<>));

@@ -268,6 +268,42 @@ var approval = await hibira.RequestApprovalAsync(new() { Title = "Refund order #
 approval = await hibira.GetApprovalAsync(approval.ApprovalId, wait: TimeSpan.FromSeconds(25));
 ```
 
+## Chat API
+
+Conversations with stored history, read receipts and offline push
+([Chat API](https://hibira.io/chat-api)). Users receive `chat.*` events on
+`#server-to-user-<id>` after `pusher.signin()`.
+
+```csharp
+await hibira.PutConversationAsync("order-42", new { name = "Order #42", members = new[] { "ann", "support" } });
+await hibira.SendMessageAsync("order-42", "ann", "Where is my parcel?");
+var page = await hibira.ListMessagesAsync("order-42", after: 0, limit: 50);
+await hibira.MarkReadAsync("order-42", "support", seq: 12);
+await hibira.SystemMessageAsync("order-42", "Support joined");
+var inbox = await hibira.UserConversationsAsync("ann", limit: 20);
+
+// Any other Chat API route, signed:
+await hibira.ChatAsync(HttpMethod.Post, "/conversations/order-42/typing", body: new { user_id = "ann" });
+```
+
+## Live Chat with verified visitors
+
+Add the [Live Chat](https://hibira.io/live-chat) widget and sign the
+signed-in user's ID so the inbox shows them as verified:
+
+```json
+"Hibira": { "LiveChat": { "Workspace": "ws_...", "IdentitySecret": "..." } }
+```
+
+```cshtml
+@inject Hibira.HibiraLiveChat LiveChat
+@Html.Raw(LiveChat.ScriptTag(User.FindFirst("sub")?.Value, User.Identity?.Name))
+```
+
+`HibiraLiveChat.UserHash(secret, userId)` gives the hash on its own;
+`LiveChat.Identity(userId, name, email)` returns the fields to pass to
+`HibiraLiveChat.identify(...)` in a single-page app.
+
 ## How it works
 
 Each hub has a private channel for everyone (`private-hibira.<hub>`), one per
@@ -320,3 +356,5 @@ Service。從 SignalR 移轉時,只要把 `Hub` 換成 `HibiraHub`、`MapHub` �
 channel_vacated webhook 並 `MapHibiraWebhooks`。
 
 等候室(waiting room):`app.UseHibiraWaitingRoom()` 加上 `.RequireWaitingRoom("presale")`(或 `[RequireWaitingRoom]`),沒有 pass 的訪客會被導到 Hibira 託管的排隊頁,輪到時帶著簽名 pass 回來並存成 HttpOnly cookie。
+
+Chat API:`hibira.PutConversationAsync`、`SendMessageAsync`、`ListMessagesAsync`、`MarkReadAsync` 等擴充方法,其他路由用 `ChatAsync`。Live Chat:設定 `Hibira:LiveChat:Workspace` 與 `IdentitySecret` 後注入 `HibiraLiveChat`,`ScriptTag(userId, name, email)` 會輸出含簽名(HMAC-SHA256)的 widget script,讓已登入使用者在收件匣顯示為已驗證訪客。
