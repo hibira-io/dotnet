@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0
 
 - Chat API: `IHibiraClient.ChatAsync` signs any Chat API call, with
   extension methods for the common ones (`PutConversationAsync`,
