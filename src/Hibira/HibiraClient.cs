@@ -225,7 +225,8 @@ public sealed class HibiraClient : IHibiraClient
     {
         var path = "/apps/" + Options.AppId + "/" + resource;
         var bytes = body == null ? null : Encoding.UTF8.GetBytes(body);
-        var qs = HibiraSignature.SignedQuery(Options.Key, Options.Secret, method.Method, path, query, bytes, Clock());
+        // The server checks the signature over the decoded path ("order 42", not order%2042).
+        var qs = HibiraSignature.SignedQuery(Options.Key, Options.Secret, method.Method, Uri.UnescapeDataString(path), query, bytes, Clock());
         using var req = new HttpRequestMessage(method, new Uri(Options.BaseUri, path + "?" + qs));
         req.Headers.UserAgent.Add(new ProductInfoHeaderValue("hibira-dotnet", Version));
         if (bytes != null)

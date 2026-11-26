@@ -57,6 +57,9 @@ public class ChatAndLiveChatTests
         Assert.Equal("50", q["limit"]);
         Assert.NotNull(q["auth_signature"]);
         Assert.Equal(12, JsonNode.Parse(h.Requests[6].Body)!["seq"]!.GetValue<long>());
+        var pq = HttpUtility.ParseQueryString(h.Requests[0].Uri.Query);
+        var canonical = string.Join("&", pq.AllKeys.Where(k => k != "auth_signature").OrderBy(k => k, StringComparer.Ordinal).Select(k => k + "=" + pq[k]));
+        Assert.Equal(HibiraSignature.Hmac("s3cr3t", "PUT\n/apps/3/chat/conversations/order 42\n" + canonical), pq["auth_signature"]);
         await Assert.ThrowsAsync<ArgumentException>(() => c.GetConversationAsync(""));
     }
 
