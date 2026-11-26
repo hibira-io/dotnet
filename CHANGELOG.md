@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.1
 
 - Fix: API requests are signed over the decoded path, as the server checks them, so Chat API IDs with a space or `/` no longer answer 401.
 
